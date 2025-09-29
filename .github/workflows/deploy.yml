@@ -39,11 +39,11 @@ jobs:
           sam package \
             --template-file template.yaml \
             --output-template-file b2b-smf-core-template.yaml \
-            --s3-bucket b2b-smf-core-bucket  \
+            --s3-bucket b2b-smf-core-bucket
 
       - name: Deploy with SAM
         run: |
           sam deploy \
             --template-file b2b-smf-core-template.yaml \
             --stack-name b2b-smf-core-backend \
-            --capabilities CAPABILITY_NAMED_IAM \
+            --capabilities CAPABILITY_NAMED_IAM

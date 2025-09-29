@@ -8,9 +8,9 @@ import { GetCommand } from "@aws-sdk/lib-dynamodb";
 
 const recipients = [
   { name: "Vishal", email: "vishal@dzynkraft.ai" },
-  //   { name: "Kranti", email: "kranti@dzynkraft.ai" },
+  { name: "Kranti", email: "kranti@dzynkraft.ai" },
   { name: "pavan", email: "pavan@dzynkraft.ai" },
-  //   { name: "Shailendra", email: "sthakur@dzynkraft.ai" },
+  { name: "Shailendra", email: "sthakur@dzynkraft.ai" },
 ];
 
 export const handler = async (event) => {

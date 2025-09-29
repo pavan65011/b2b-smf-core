@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform:
+  - AWS::Serverless-2016-10-31
+Description: >-
+  b2b-smf_core
+
+Resources:
+  SendEmailFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/Form/sendEmail.handler
+      Runtime: nodejs20.x
+      Timeout: 20
+      Events:
+        SendEmailApi:
+          Type: Api
+          Properties:
+            Path: /form
+            Method: post
+            RestApiId: !Ref B2BSMFAPI
+
+  B2BSMFAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      EndpointConfiguration: REGIONAL

@@ -1,0 +1,49 @@
+name: B2B ShowMyFlat Core Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Install AWS SAM CLI
+        run: |
+          pip install aws-sam-cli
+
+      - name: Install Node.js dependencies
+        run: |
+          if [ -f package.json ]; then npm install; fi
+
+      - name: Check for template file
+        run: |
+          if [ -f template.yaml ]; then echo "template.yaml found"; else echo "template.yaml not found"; exit 1; fi
+
+      - name: Build with SAM
+        run: sam build
+
+      - name: Package with SAM
+        run: |
+          sam package \
+            --template-file template.yaml \
+            --output-template-file b2b-smf-core-template.yaml \
+            --s3-bucket b2b-smf-core-bucket  \
+
+      - name: Deploy with SAM
+        run: |
+          sam deploy \
+            --template-file b2b-smf-core-template.yaml \
+            --stack-name b2b-smf-core-backend \
+            --capabilities CAPABILITY_NAMED_IAM \

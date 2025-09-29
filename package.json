@@ -1,0 +1,31 @@
+{
+  "name": "delete-test-01",
+  "description": "delete-test-01-description",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.398.0",
+    "@aws-sdk/lib-dynamodb": "^3.398.0",
+    "nodemailer": "^7.0.6",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "aws-sdk-client-mock": "^2.0.0",
+    "jest": "^29.2.1"
+  },
+  "scripts": {
+    "start": "nodemon --watch src --watch template.yaml --ext js,json,yaml --exec sam local start-api"
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "**/__tests__/**/*.mjs?(x)",
+      "**/?(*.)+(spec|test).mjs?(x)"
+    ],
+    "moduleFileExtensions": [
+      "mjs",
+      "js"
+    ]
+  }
+}

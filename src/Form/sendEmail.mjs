@@ -15,14 +15,20 @@ const recipients = [
 
 export const handler = async (event) => {
   try {
-    const { name, organization, phoneNumber, role } = formDataSchema.parse(
-      JSON.parse(event.body)
-    );
+    const { name, organization, phoneNumber, role, emailId } =
+      formDataSchema.parse(JSON.parse(event.body));
     // Process the validated data (e.g., send an email)
     const createdOn = new Date().toLocaleString("en-US", {
       timeZone: "Asia/Kolkata",
     });
-    const userData = { name, organization, phoneNumber, role, createdOn };
+    const userData = {
+      name,
+      organization,
+      phoneNumber,
+      role,
+      createdOn,
+      emailId,
+    };
     await sendEmail(userData, recipients);
     return {
       statusCode: 200,
@@ -76,7 +82,7 @@ const sendEmailToRecipient = async (
 };
 
 const sendEmail = async (data, recipients) => {
-  const { name, phoneNumber, createdOn, organization, role } = data;
+  const { name, phoneNumber, createdOn, organization, role, emailId } = data;
 
   const masterUserData = await getMasterUserData();
   if (!masterUserData) {
@@ -184,6 +190,9 @@ const sendEmail = async (data, recipients) => {
             <p></p><span class="tags">Organization:-</span> ${organization}</p>
             <p><span class="tags">Phone Number:-</span><a href=tel:+${phoneNumber}> +${phoneNumber}</a></p>
             <p><span class="tags">Role:-</span> ${role ? role : "N/A"}</p>
+            <p><span class="tags">Email ID:-</span> ${
+              emailId ? emailId : "N/A"
+            }</p>
             <p><span class="tags">Time Visited:-</span> ${createdOn}</p>
           </div>
           <div class="footer">

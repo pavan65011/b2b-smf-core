@@ -5,5 +5,5 @@ export const formDataSchema = z.object({
   organization: z.string().trim(),
   phoneNumber: z.string().trim(),
   role: z.string().trim().optional(),
-  emailId: z.string().email().trim().optional(),
+  emailId: z.string().trim().email().optional().or(z.literal("")),
 });

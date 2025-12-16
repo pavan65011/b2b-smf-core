@@ -8,20 +8,20 @@ export const generateTokensAndReturnMultiValueHeaders = (
   phoneNumber
 ) => {
   const accessToken = jwt.sign({ id: userId, phoneNumber }, JWT_SECRET, {
-    expiresIn: "5m",
+    expiresIn: "30m",
   });
   const refreshToken = jwt.sign(
     { id: userId, phoneNumber },
     JWT_REFRESH_SECRET,
     {
-      expiresIn: "5m",
+      expiresIn: "30m",
     }
   );
 
   const multiValueHeaders = {
     "Set-Cookie": [
-      `sh5dz$sl=${accessToken}; Max-Age=300; Path=/; HttpOnly; Secure; SameSite=None`,
-      `cr8dz$ll=${refreshToken}; Max-Age=300; Path=/; HttpOnly; Secure; SameSite=None`,
+      `sh5dz$sl=${accessToken}; Max-Age=1800; Path=/; HttpOnly; Secure; SameSite=None`,
+      `cr8dz$ll=${refreshToken}; Max-Age=1800; Path=/; HttpOnly; Secure; SameSite=None`,
     ],
   };
 

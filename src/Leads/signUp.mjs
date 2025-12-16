@@ -3,6 +3,7 @@ import { DB_DOC_CLIENT, headers } from "../Utils/constants.mjs";
 import { INDEX_NAMES, TABLE_NAMES } from "../Utils/tableNames.mjs";
 import { v4 as uuidv4 } from "uuid";
 import { generateTokensAndReturnMultiValueHeaders } from "../Utils/multiValueHeaders.mjs";
+import { recipients, sendEmail } from "../Form/sendEmail.mjs";
 
 export const signUp = async (
   phoneNumber,
@@ -62,6 +63,15 @@ export const signUp = async (
       );
 
       await DB_DOC_CLIENT.send(new PutCommand(params));
+      const userData = {
+        name,
+        organization,
+        phoneNumber,
+        role,
+        createdOn: params.createdAt,
+        emailId: email,
+      };
+      await sendEmail(userData, recipients);
       return {
         statusCode: 200,
         body: JSON.stringify({ message: "Sign up successful" }),

@@ -6,11 +6,11 @@ import { TABLE_NAMES } from "../Utils/tableNames.mjs";
 import nodemailer from "nodemailer";
 import { GetCommand } from "@aws-sdk/lib-dynamodb";
 
-const recipients = [
+export const recipients = [
   { name: "Vishal", email: "vishal@dzynkraft.ai" },
   { name: "Kranti", email: "kranti@dzynkraft.ai" },
   { name: "pavan", email: "pavan@dzynkraft.ai" },
-  { name: "Shailendra", email: "sthakur@dzynkraft.ai" },
+  // { name: "Shailendra", email: "sthakur@dzynkraft.ai" },
 ];
 
 export const handler = async (event) => {
@@ -81,7 +81,7 @@ const sendEmailToRecipient = async (
   }
 };
 
-const sendEmail = async (data, recipients) => {
+export const sendEmail = async (data, recipients) => {
   const { name, phoneNumber, createdOn, organization, role, emailId } = data;
 
   const masterUserData = await getMasterUserData();

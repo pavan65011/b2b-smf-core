@@ -75,7 +75,7 @@ Resources:
     Properties:
       Handler: src/Form/verifyOtp.handler
       Runtime: nodejs20.x
-      Timeout: 20
+      Timeout: 30
       Events:
         VerifyOtpApi:
           Type: Api

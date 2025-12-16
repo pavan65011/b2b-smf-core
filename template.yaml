@@ -4,7 +4,44 @@ Transform:
 Description: >-
   b2b-smf_core
 
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    Environment:
+      Variables:
+        APP_ID: e3804a193dc216170b8e4c306efd187f
+        APP_SECRET: yerawiyizevu
+        JWT_SECRET_KEY: !Ref JwtSecretKey
+        JWT_REFRESH_SECRET_KEY: !Ref JwtRefreshSecretKey
+
 Resources:
+  B2BLeadsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: b2b-smf-core-Leads
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: phoneNumber
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: phoneNumber-index
+          KeySchema:
+            - AttributeName: phoneNumber
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
   SendEmailFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -19,12 +56,65 @@ Resources:
             Method: post
             RestApiId: !Ref B2BSMFAPI
 
+  SendOtpFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/Form/sendOtp.handler
+      Runtime: nodejs20.x
+      Timeout: 20
+      Events:
+        SendOtpApi:
+          Type: Api
+          Properties:
+            Path: /form/send-otp
+            Method: post
+            RestApiId: !Ref B2BSMFAPI
+
+  VerifyOtpFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/Form/verifyOtp.handler
+      Runtime: nodejs20.x
+      Timeout: 20
+      Events:
+        VerifyOtpApi:
+          Type: Api
+          Properties:
+            Path: /form/verify-otp
+            Method: post
+            RestApiId: !Ref B2BSMFAPI
+
+  DownloadReportFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/Form/downloadReport.handler
+      Runtime: nodejs20.x
+      Timeout: 20
+      Events:
+        DownloadReportApi:
+          Type: Api
+          Properties:
+            Path: /form/download-report
+            Method: post
+            RestApiId: !Ref B2BSMFAPI
+
   B2BSMFAPI:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
       Cors:
-        AllowMethods: "'POST,OPTIONS'"
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        AllowOrigin: "'*'"
+        AllowOrigin: "'https://b2b.showmyflat.com'"
+        AllowCredentials: true
       EndpointConfiguration: REGIONAL
+
+Parameters:
+  JwtSecretKey:
+    Type: String
+    Description: Secret key for signing JWT tokens
+    Default: b2b-smf#core-jwt%secretKey@3453
+  JwtRefreshSecretKey:
+    Type: String
+    Description: Secret key for signing JWT refresh tokens
+    Default: b2b!smf$core(jwt$refresh%secretKey)6789

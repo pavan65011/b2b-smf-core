@@ -3,7 +3,7 @@ import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 export const headers = {
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "https://b2b.showmyflat.com",
   "Access-Control-Allow-Headers":
     "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
   "Access-Control-Allow-Credentials": "true",

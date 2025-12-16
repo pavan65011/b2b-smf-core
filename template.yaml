@@ -48,6 +48,7 @@ Resources:
       Handler: src/Form/sendEmail.handler
       Runtime: nodejs20.x
       Timeout: 20
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
       Events:
         SendEmailApi:
           Type: Api
@@ -62,6 +63,7 @@ Resources:
       Handler: src/Form/sendOtp.handler
       Runtime: nodejs20.x
       Timeout: 20
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
       Events:
         SendOtpApi:
           Type: Api
@@ -76,6 +78,7 @@ Resources:
       Handler: src/Form/verifyOtp.handler
       Runtime: nodejs20.x
       Timeout: 30
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
       Events:
         VerifyOtpApi:
           Type: Api
@@ -90,6 +93,7 @@ Resources:
       Handler: src/Form/downloadReport.handler
       Runtime: nodejs20.x
       Timeout: 20
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
       Events:
         DownloadReportApi:
           Type: Api

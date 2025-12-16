@@ -4,6 +4,7 @@ import { encryptPhoneNumber, sendOtp } from "../Utils/otpHelpers.mjs";
 export const handler = async (event) => {
   try {
     const { phoneNumber } = JSON.parse(event.body);
+    console.log("Received phone number:", phoneNumber);
 
     if (!phoneNumber) {
       return {
@@ -12,7 +13,12 @@ export const handler = async (event) => {
         headers,
       };
     }
-    const verificationId = await sendOtp(phoneNumber);
+
+    //check if phonenumber starts with + or not, if not add +
+    const formattedPhoneNumber = phoneNumber.startsWith("+")
+      ? phoneNumber
+      : `+${phoneNumber}`;
+    const verificationId = await sendOtp(formattedPhoneNumber);
 
     const { encryptedData, iv: encryptedIv } = encryptPhoneNumber(phoneNumber);
     return {

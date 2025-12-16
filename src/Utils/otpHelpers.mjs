@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import axios from "axios";
 
 export const sendOtp = async (phoneNumber) => {
   const APP_ID = process.env.APP_ID;

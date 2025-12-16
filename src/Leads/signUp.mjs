@@ -24,7 +24,8 @@ export const signUp = async (
         email,
         organization,
         role,
-        hiddenText
+        hiddenText,
+        isUserExisted
       );
 
       const { multiValueHeaders } = generateTokensAndReturnMultiValueHeaders(
@@ -32,41 +33,42 @@ export const signUp = async (
         phoneNumber
       );
 
-      await DB_DOC_CLIENT.send(new PutCommand(params));
+      if (!isUserExisted) await DB_DOC_CLIENT.send(new PutCommand(params));
       return {
         statusCode: 200,
         body: JSON.stringify({ message: "User details updated successfully" }),
         headers,
         multiValueHeaders,
       };
+    } else {
+      const params = {
+        TableName: TABLE_NAMES.B2B_SMF_LEADS_TABLE,
+        Item: {
+          id: uuidv4(),
+          phoneNumber,
+          name,
+          organization,
+          email,
+          role,
+          hiddenText,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      };
+
+      const { multiValueHeaders } = generateTokensAndReturnMultiValueHeaders(
+        params.Item.id,
+        phoneNumber
+      );
+
+      await DB_DOC_CLIENT.send(new PutCommand(params));
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Sign up successful" }),
+        headers,
+        multiValueHeaders,
+      };
     }
-    const params = {
-      TableName: TABLE_NAMES.B2B_SMF_LEADS_TABLE,
-      Item: {
-        id: uuidv4(),
-        phoneNumber,
-        name,
-        organization,
-        email,
-        role,
-        hiddenText,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    };
-
-    const { multiValueHeaders } = generateTokensAndReturnMultiValueHeaders(
-      params.Item.id,
-      phoneNumber
-    );
-
-    await DB_DOC_CLIENT.send(new PutCommand(params));
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: "Sign up successful" }),
-      headers,
-      multiValueHeaders,
-    };
   } catch (error) {
     console.error("Error in signUp:", error);
     return {
@@ -103,9 +105,10 @@ export const setDynamicParams = (
   email,
   organization,
   role,
-  hiddenText
+  hiddenText,
+  isUserExisted
 ) => {
-  let updateExpression = "SET updateAt = :updatedAt";
+  let updateExpression = "SET updatedAt = :updatedAt";
   let expressionAttributeValues = {
     ":updatedAt": new Date().toISOString(),
   };
@@ -142,7 +145,7 @@ export const setDynamicParams = (
     TableName: TABLE_NAMES.B2B_SMF_LEADS_TABLE,
     Key: { id: isUserExisted.id },
     UpdateExpression: updateExpression,
-    ExpressionAttributeNames: expressionAttributeNames,
+    ExpressionAttributeValues: expressionAttributeValues,
     ...(Object.keys(expressionAttributeNames).length > 0 && {
       ExpressionAttributeNames: expressionAttributeNames,
     }),

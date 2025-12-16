@@ -1,6 +1,6 @@
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { setDynamicParams } from "../Leads/signUp.mjs";
-import { DB_DOC_CLIENT } from "../Utils/constants.mjs";
+import { DB_DOC_CLIENT, headers } from "../Utils/constants.mjs";
 import { verifyUserFromCookies } from "../Utils/verifyUser.mjs";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -28,10 +28,11 @@ export const handler = async (event) => {
       email,
       organization,
       role,
-      hiddenText
+      hiddenText,
+      user
     );
 
-    await DB_DOC_CLIENT.send(new PutCommand(params));
+    await DB_DOC_CLIENT.send(new UpdateCommand(params));
 
     const url = await generatePdfUrl(
       "b2b-smf-media",

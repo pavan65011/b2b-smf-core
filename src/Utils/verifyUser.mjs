@@ -3,6 +3,8 @@ import { DB_DOC_CLIENT } from "./constants.mjs";
 import { TABLE_NAMES } from "./tableNames.mjs";
 import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.JWT_SECRET_KEY;
+
 export const parseCookies = (cookieHeader) => {
   const cookies = {};
   if (cookieHeader) {

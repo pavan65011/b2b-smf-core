@@ -36,7 +36,7 @@ export const handler = async (event) => {
 
     const url = await generatePdfUrl(
       "b2b-smf-media",
-      "ShowMyFlat - Real Estate Marketing Lead Leakage Report.pdf"
+      "Reports/ShowMyFlat - Real Estate Marketing Lead Leakage Report.pdf"
     );
 
     return {

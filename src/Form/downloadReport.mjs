@@ -35,7 +35,7 @@ export const handler = async (event) => {
     await DB_DOC_CLIENT.send(new UpdateCommand(params));
 
     const url = await generatePdfUrl(
-      "b2b-smf-media-new",
+      "b2b-smf-media",
       "Reports/ShowMyFlat - Real Estate Marketing Lead Leakage Report.pdf"
     );
 

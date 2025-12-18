@@ -60,6 +60,8 @@ export const generatePdfUrl = async (bucketName, objectKey) => {
   const command = new GetObjectCommand({
     Bucket: bucketName,
     Key: objectKey,
+    ResponseContentDisposition: 'attachment; filename="report.pdf"',
+    ResponseContentType: "application/pdf",
   });
 
   // 5 minutes = 300 seconds

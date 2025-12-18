@@ -68,7 +68,7 @@ export const signUp = async (
         organization,
         phoneNumber,
         role,
-        createdOn: params.createdAt,
+        createdOn: params.Item.createdAt,
         emailId: email,
       };
       await sendEmail(userData, recipients);

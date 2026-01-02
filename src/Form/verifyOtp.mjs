@@ -47,13 +47,15 @@ export const handler = async (event) => {
     if (result.statusCode === 200) {
       attemptCounts[verificationId] = 0;
 
+      const otpVerified = true;
       const response = await signUp(
         phoneNumber,
         name,
         organization,
         email,
         role,
-        hiddenText
+        hiddenText,
+        otpVerified
       );
       return {
         statusCode: response.statusCode,

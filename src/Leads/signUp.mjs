@@ -11,7 +11,8 @@ export const signUp = async (
   organization,
   email,
   role,
-  hiddenText
+  hiddenText,
+  otpVerified
 ) => {
   try {
     //check if user already exists in the db with phone number
@@ -26,7 +27,8 @@ export const signUp = async (
         organization,
         role,
         hiddenText,
-        isUserExisted
+        isUserExisted,
+        otpVerified
       );
 
       const { multiValueHeaders } = generateTokensAndReturnMultiValueHeaders(
@@ -52,6 +54,7 @@ export const signUp = async (
           email,
           role,
           hiddenText,
+          otpVerified,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
@@ -116,7 +119,8 @@ export const setDynamicParams = (
   organization,
   role,
   hiddenText,
-  isUserExisted
+  isUserExisted,
+  otpVerified
 ) => {
   let updateExpression = "SET updatedAt = :updatedAt";
   let expressionAttributeValues = {
@@ -149,6 +153,11 @@ export const setDynamicParams = (
   if (isNotEmpty(hiddenText)) {
     updateExpression += ", hiddenText = :hiddenText";
     expressionAttributeValues[":hiddenText"] = hiddenText;
+  }
+
+  if (otpVerified && typeof otpVerified === "boolean") {
+    updateExpression += ", otpVerified = :otpVerified";
+    expressionAttributeValues[":otpVerified"] = otpVerified;
   }
 
   const params = {

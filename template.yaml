@@ -102,6 +102,21 @@ Resources:
             Method: post
             RestApiId: !Ref B2BSMFAPI
 
+  SaveLeadOnAutoFillFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/Form/saveLeadOnAutoFill.handler
+      Runtime: nodejs20.x
+      Timeout: 20
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
+      Events:
+        SaveLeadOnAutoFillApi:
+          Type: Api
+          Properties:
+            Path: /form/auto-lead
+            Method: post
+            RestApiId: !Ref B2BSMFAPI
+
   B2BSMFAPI:
     Type: AWS::Serverless::Api
     Properties:

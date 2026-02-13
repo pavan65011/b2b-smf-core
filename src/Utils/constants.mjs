@@ -10,5 +10,10 @@ export const headers = {
   "Content-Type": "application/json",
 };
 
+export const hashToken = (token) => {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+
 const client = new DynamoDBClient();
 export const DB_DOC_CLIENT = DynamoDBDocumentClient.from(client);

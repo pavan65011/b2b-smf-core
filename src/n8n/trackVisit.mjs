@@ -6,10 +6,13 @@ import { DB_DOC_CLIENT, hashToken } from "../Utils/constants.mjs";
 /* ---------- Handler ---------- */
 export const handler = async (event) => {
   try {
-    const { token } = JSON.parse(event.body || "{}");
+    const { token, sig } = JSON.parse(event.body || "{}");
     console.log("Received tracking token:", token);
-    if (!token) return success();
 
+    //  Security gate
+    if (!token || sig !== process.env.INTERNAL_API_SECRET) {
+      return success(); // silently ignore
+    }
     const id = hashToken(token);
 
     await DB_DOC_CLIENT.send(

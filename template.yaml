@@ -18,6 +18,7 @@ Globals:
         INTERNAL_CLIENT_SECRET: Dzynkraft@65013
         INTERNAL_JWT_SECRET: smf#650rspvk
         TRACKING_TOKEN_SECRET: n8n#650rspvksdrfa
+        INTERNAL_API_SECRET: vkrshpnhna!2854#$
 
 Resources:
   B2BLeadsTable:

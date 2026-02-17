@@ -17,7 +17,7 @@ function verifyJWT(authHeader) {
 
   const token = authHeader.split(" ")[1];
   if (!token) throw new Error("Invalid auth header");
-  console.log("Received JWT:", token);
+  // console.log("Received JWT:", token);
 
   return jwt.verify(token, process.env.INTERNAL_JWT_SECRET);
 }
@@ -70,6 +70,7 @@ export const handler = async (event) => {
             id: tokenHash, // PRIMARY KEY
             email,
             visited: false,
+            token: trackingToken, // for reference/debugging (not used in lookup)
             createdAt: new Date().toISOString(),   
           },
           ConditionExpression: "attribute_not_exists(id)", // safety

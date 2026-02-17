@@ -7,6 +7,7 @@ import { DB_DOC_CLIENT, hashToken } from "../Utils/constants.mjs";
 export const handler = async (event) => {
   try {
     const { token } = JSON.parse(event.body || "{}");
+    console.log("Received tracking token:", token);
     if (!token) return success();
 
     const id = hashToken(token);

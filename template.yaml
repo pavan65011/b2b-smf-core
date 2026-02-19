@@ -167,6 +167,21 @@ Resources:
             Path: /redirect-link
             Method: post
             RestApiId: !Ref B2BSMFAPI
+          
+  GenerateLinkForTrackingLinksForBulkEmailsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/n8n/generateTrackingLinksForBulkEmails.handler
+      Runtime: nodejs20.x
+      Timeout: 20
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
+      Events:
+        generateTrackingLinksForBulkEmailsApi:
+          Type: Api
+          Properties:
+            Path: /redirect-links-for-bulk-emails
+            Method: post
+            RestApiId: !Ref B2BSMFAPI
 
   # GetEmailFromTokenFunction:
   #   Type: AWS::Serverless::Function

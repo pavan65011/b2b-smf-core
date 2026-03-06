@@ -6,7 +6,7 @@ import { TABLE_NAMES } from "../Utils/tableNames.mjs";
 
 /* ---------- CONFIG ---------- */
 const ALGO = "aes-256-gcm";
-const MAX_EMAILS_PER_REQUEST = 25;
+const MAX_EMAILS_PER_REQUEST = 100;
 
 const TRACKING_SECRET = crypto
   .createHash("sha256")

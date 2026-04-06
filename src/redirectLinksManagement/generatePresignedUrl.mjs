@@ -1,10 +1,11 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
+import { headers } from "../Utils/constants.mjs";
 
-const s3 = new S3Client({ });
+const s3 = new S3Client({});
 
-const BUCKET_NAME = "ai-chatbot-media";
+const BUCKET_NAME = "b2b-smf-redirect-links-management";
 const URL_EXPIRY = 60 * 5; // 5 minutes
 
 export const handler = async (event) => {
@@ -46,6 +47,13 @@ export const handler = async (event) => {
     /* ---------- Response ---------- */
     return {
       statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers":
+          "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         success: true,
         message: "Presigned URL generated",
@@ -62,8 +70,23 @@ export const handler = async (event) => {
 
     return {
       statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers":
+          "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Content-Type": "application/json",
+      },
+
       body: JSON.stringify({
-        success: false,
+          success: false,
+          headers: {
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers":
+              "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+            "Content-Type": "application/json", 
+        },
         message: err.message || "Internal server error",
       }),
     };
@@ -73,11 +96,14 @@ export const handler = async (event) => {
 /* ---------- RESPONSE HELPER ---------- */
 function response(statusCode, message) {
   return {
-      statusCode,
-      headers: {
-          "Content-Type": "application/json",
-          "allow-origin": "*",
-      },
+    statusCode,
+    headers: {
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers":
+        "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       success: false,
       message,

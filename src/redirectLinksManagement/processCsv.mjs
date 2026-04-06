@@ -19,7 +19,7 @@ const TRACKING_SECRET = crypto
   .digest();
 
 const s3 = new S3Client({});
-const BUCKET = "ai-chatbot-media";
+const BUCKET = "b2b-smf-redirect-links-management";
 
 const isValidString = (val) => {
   if (!val) return false;
@@ -187,21 +187,20 @@ export const handler = async (event) => {
         trackingToken = encrypt(payload);
         tokenHash = hashToken(trackingToken);
 
-          url = `https://b2b.showmyflat.com?token=${trackingToken}`;
-          
-          const item = {
-            id: tokenHash,
-            visited: false,
-            token: trackingToken,
-            url,
-            generatedBy: email ? "email" : "phoneNumber",
-            createdAt: new Date().toISOString(),
-          };
+        url = `https://b2b.showmyflat.com?token=${trackingToken}`;
 
-          // Only add if present
-          if (email) item.email = email;
-          if (phoneNumber) item.phoneNumber = phoneNumber;
+        const item = {
+          id: tokenHash,
+          visited: false,
+          token: trackingToken,
+          url,
+          generatedBy: email ? "email" : "phoneNumber",
+          createdAt: new Date().toISOString(),
+        };
 
+        // Only add if present
+        if (email) item.email = email;
+        if (phoneNumber) item.phoneNumber = phoneNumber;
 
         dbPromises.push(
           DB_DOC_CLIENT.send(
@@ -266,8 +265,11 @@ function response(statusCode, body) {
   return {
     statusCode,
     headers: {
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers":
+        "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
       "Content-Type": "application/json",
-      "allow-origin": "*",
     },
     body: JSON.stringify(body),
   };

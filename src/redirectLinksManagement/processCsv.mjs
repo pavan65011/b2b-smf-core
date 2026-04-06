@@ -267,6 +267,7 @@ function response(statusCode, body) {
     statusCode,
     headers: {
       "Content-Type": "application/json",
+      "allow-origin": "*",
     },
     body: JSON.stringify(body),
   };

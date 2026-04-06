@@ -1,8 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform:
   - AWS::Serverless-2016-10-31
-Description: >-
-  b2b-smf_core
+Description: b2b-smf_core
 
 Globals:
   Function:
@@ -47,7 +46,6 @@ Resources:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
 
-
   LeadLinkVisitsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -81,7 +79,6 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
-
 
   SendEmailFunction:
     Type: AWS::Serverless::Function
@@ -187,7 +184,7 @@ Resources:
             Path: /redirect-link
             Method: post
             RestApiId: !Ref B2BSMFAPI
-          
+
   GenerateLinkForTrackingLinksForBulkEmailsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -246,7 +243,7 @@ Resources:
           Properties:
             Path: /generate-upload-url
             Method: post
-            RestApiId: !Ref B2BSMFAPI
+            RestApiId: !Ref REDIRECTLINKAPI
 
   ProcessCSVFunction:
     Type: AWS::Serverless::Function
@@ -261,19 +258,27 @@ Resources:
           Properties:
             Path: /process-csv
             Method: post
-            RestApiId: !Ref B2BSMFAPI
-
-  
+            RestApiId: !Ref REDIRECTLINKAPI
 
   B2BSMFAPI:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
       Cors:
-        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
-        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        AllowOrigin: "'https://b2b.showmyflat.com'"
+        AllowMethods: '''GET,POST,PUT,DELETE,OPTIONS'''
+        AllowHeaders: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+        AllowOrigin: '''https://b2b.showmyflat.com'''
         AllowCredentials: true
+      EndpointConfiguration: REGIONAL
+
+  REDIRECTLINKAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: '''GET,POST,PUT,DELETE,OPTIONS'''
+        AllowHeaders: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+        AllowOrigin: '''*'''
       EndpointConfiguration: REGIONAL
 
 Parameters:

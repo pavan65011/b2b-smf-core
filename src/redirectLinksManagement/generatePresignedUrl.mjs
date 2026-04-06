@@ -73,7 +73,11 @@ export const handler = async (event) => {
 /* ---------- RESPONSE HELPER ---------- */
 function response(statusCode, message) {
   return {
-    statusCode,
+      statusCode,
+      headers: {
+          "Content-Type": "application/json",
+          "allow-origin": "*",
+      },
     body: JSON.stringify({
       success: false,
       message,

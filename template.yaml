@@ -60,8 +60,8 @@ Resources:
           AttributeType: S
         - AttributeName: email
           AttributeType: S
-        # - AttributeName: phoneNumber
-        #   AttributeType: S
+        - AttributeName: phoneNumber
+          AttributeType: S
 
       KeySchema:
         - AttributeName: id
@@ -75,12 +75,12 @@ Resources:
           Projection:
             ProjectionType: ALL
 
-        # - IndexName: PhoneIndex
-        #   KeySchema:
-        #     - AttributeName: phoneNumber
-        #       KeyType: HASH
-        #   Projection:
-        #     ProjectionType: ALL
+        - IndexName: PhoneIndex
+          KeySchema:
+            - AttributeName: phoneNumber
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
 
 
   SendEmailFunction:

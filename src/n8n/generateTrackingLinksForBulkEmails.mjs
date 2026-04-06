@@ -85,6 +85,7 @@ export const handler = async (event) => {
             email,
             visited: false,
             token: trackingToken, // stored for reference/debug
+            url: `https://b2b.showmyflat.com?token=${trackingToken}`,
             createdAt: new Date().toISOString(),
           },
           ConditionExpression: "attribute_not_exists(id)",

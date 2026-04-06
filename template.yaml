@@ -52,15 +52,35 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: b2b-smf-core-LeadLinkVisits
+
+      BillingMode: PAY_PER_REQUEST
+
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+        - AttributeName: phoneNumber
+          AttributeType: S
+
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+
+      GlobalSecondaryIndexes:
+        - IndexName: EmailIndex
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+        - IndexName: PhoneIndex
+          KeySchema:
+            - AttributeName: phoneNumber
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
 
 
   SendEmailFunction:

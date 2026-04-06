@@ -233,6 +233,36 @@ Resources:
             Method: post
             RestApiId: !Ref B2BSMFAPI
 
+  GeneratePresignedUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/redirectLinksManagement/generatePresignedUrl.handler
+      Runtime: nodejs20.x
+      Timeout: 20
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
+      Events:
+        GeneratePresignedUrlApi:
+          Type: Api
+          Properties:
+            Path: /generate-upload-url
+            Method: post
+            RestApiId: !Ref B2BSMFAPI
+
+  ProcessCSVFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/redirectLinksManagement/processCsv.handler
+      Runtime: nodejs20.x
+      Timeout: 100
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
+      Events:
+        ProcessCSVApi:
+          Type: Api
+          Properties:
+            Path: /process-csv
+            Method: post
+            RestApiId: !Ref B2BSMFAPI
+
   
 
   B2BSMFAPI:

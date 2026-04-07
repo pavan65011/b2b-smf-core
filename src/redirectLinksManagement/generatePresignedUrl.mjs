@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
-import { headers, redirectLinksHeaders } from "../Utils/constants.mjs";
+import { headers, headers } from "../Utils/constants.mjs";
 
 const s3 = new S3Client({});
 
@@ -47,7 +47,7 @@ export const handler = async (event) => {
     /* ---------- Response ---------- */
     return {
       statusCode: 200,
-      headers: redirectLinksHeaders,
+      headers: headers,
       body: JSON.stringify({
         success: true,
         message: "Presigned URL generated",
@@ -64,7 +64,7 @@ export const handler = async (event) => {
 
     return {
       statusCode: 500,
-      headers:redirectLinksHeaders,
+      headers:headers,
 
       body: JSON.stringify({
           success: false,
@@ -78,7 +78,7 @@ export const handler = async (event) => {
 function response(statusCode, message) {
   return {
     statusCode,
-    headers: redirectLinksHeaders,
+    headers: headers,
     body: JSON.stringify({
       success: false,
       message,

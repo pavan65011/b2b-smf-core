@@ -243,7 +243,7 @@ Resources:
           Properties:
             Path: /generate-upload-url
             Method: post
-            RestApiId: !Ref B2BSMFAPI
+            RestApiId: !Ref REDIRECTLINKAPI
 
   ProcessCSVFunction:
     Type: AWS::Serverless::Function
@@ -278,8 +278,7 @@ Resources:
       Cors:
         AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        AllowOrigin: "'*'"
-        AllowCredentials: false
+        AllowOrigin: '''http://localhost:5173'''
       EndpointConfiguration: REGIONAL
 
 Parameters:

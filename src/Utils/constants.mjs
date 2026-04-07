@@ -9,6 +9,14 @@ export const headers = {
   "Access-Control-Allow-Credentials": "true",
   "Content-Type": "application/json",
 };
+export const redirectLinksHeaders = {
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Credentials": "false",
+};
 
 export const hashToken = (token) => {
   return crypto.createHash("sha256").update(token).digest("hex");

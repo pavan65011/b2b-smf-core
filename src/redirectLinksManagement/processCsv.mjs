@@ -4,7 +4,7 @@ import {
   GetObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
-import { DB_DOC_CLIENT, hashToken } from "../Utils/constants.mjs";
+import { DB_DOC_CLIENT, hashToken, redirectLinksHeaders } from "../Utils/constants.mjs";
 import { PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { TABLE_NAMES } from "../Utils/tableNames.mjs";
 import csv from "csv-parser";
@@ -264,13 +264,7 @@ export const handler = async (event) => {
 function response(statusCode, body) {
   return {
     statusCode,
-    headers: {
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers":
-        "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-      "Content-Type": "application/json",
-    },
+    headers: redirectLinksHeaders,
     body: JSON.stringify(body),
   };
 }

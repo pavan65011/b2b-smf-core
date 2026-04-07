@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
-import { headers } from "../Utils/constants.mjs";
+import { headers, redirectLinksHeaders } from "../Utils/constants.mjs";
 
 const s3 = new S3Client({});
 
@@ -47,13 +47,7 @@ export const handler = async (event) => {
     /* ---------- Response ---------- */
     return {
       statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers":
-          "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-        "Content-Type": "application/json",
-      },
+      headers: redirectLinksHeaders,
       body: JSON.stringify({
         success: true,
         message: "Presigned URL generated",
@@ -70,23 +64,10 @@ export const handler = async (event) => {
 
     return {
       statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers":
-          "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-        "Content-Type": "application/json",
-      },
+      headers:redirectLinksHeaders,
 
       body: JSON.stringify({
           success: false,
-          headers: {
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers":
-              "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-            "Content-Type": "application/json", 
-        },
         message: err.message || "Internal server error",
       }),
     };
@@ -97,13 +78,7 @@ export const handler = async (event) => {
 function response(statusCode, message) {
   return {
     statusCode,
-    headers: {
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers":
-        "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-      "Content-Type": "application/json",
-    },
+    headers: redirectLinksHeaders,
     body: JSON.stringify({
       success: false,
       message,

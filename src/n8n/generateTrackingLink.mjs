@@ -23,28 +23,37 @@ function verifyJWT(authHeader) {
 }
 
 /* ---------- Encrypt ---------- */
+// function encrypt(payload) {
+//   const iv = crypto.randomBytes(12);
+//   const cipher = crypto.createCipheriv(ALGO, TRACKING_SECRET, iv);
+
+//   let encrypted = cipher.update(JSON.stringify(payload), "utf8", "hex");
+//   encrypted += cipher.final("hex");
+
+//   const tag = cipher.getAuthTag();
+//   return `${iv.toString("hex")}.${tag.toString("hex")}.${encrypted}`;
+// }
 function encrypt(payload) {
-  const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv(ALGO, TRACKING_SECRET, iv);
-
-  let encrypted = cipher.update(JSON.stringify(payload), "utf8", "hex");
-  encrypted += cipher.final("hex");
-
-  const tag = cipher.getAuthTag();
-  return `${iv.toString("hex")}.${tag.toString("hex")}.${encrypted}`;
+  return crypto
+    .createHmac("sha256", TRACKING_SECRET)
+    .update(payload)
+    .digest("base64url")
+    .slice(0, 22); // shorten
 }
+
+// if we want more uniqueness in the token that we  can have like 22 instead of 16 chars above
 
 /* ---------- Handler ---------- */
 export const handler = async (event) => {
   try {
-    const decoded = verifyJWT(event.headers?.Authorization);
+    // const decoded = verifyJWT(event.headers?.Authorization);
 
-    if (decoded.type !== "internal-service") {
-      return response(403, {
-        success: false,
-        message: "Forbidden",
-      });
-    }
+    // if (decoded.type !== "internal-service") {
+    //   return response(403, {
+    //     success: false,
+    //     message: "Forbidden",
+    //   });
+    // }
 
     const { email } = JSON.parse(event.body || "{}");
     if (!email) {
@@ -60,23 +69,24 @@ export const handler = async (event) => {
       //   exp: Date.now() + 24 * 60 * 60 * 1000,
     };
 
-      const trackingToken = encrypt(payload);
-      const tokenHash = hashToken(trackingToken);
-      
-      await DB_DOC_CLIENT.send(
-        new PutCommand({
-          TableName: TABLE_NAMES.LEAD_LINK_VISITS_TABLE,
-          Item: {
-            id: tokenHash, // PRIMARY KEY
-            email,
-            visited: false,
-            token: trackingToken, // for reference/debugging (not used in lookup)
-            url: `https://b2b.showmyflat.com?token=${trackingToken}`,
-            createdAt: new Date().toISOString(),
-          },
-          ConditionExpression: "attribute_not_exists(id)", // safety
-        }),
-      );
+    const trackingToken = encrypt(email);
+    const tokenHash = hashToken(trackingToken);
+
+    await DB_DOC_CLIENT.send(
+      new PutCommand({
+        TableName: TABLE_NAMES.LEAD_LINK_VISITS_TABLE,
+        Item: {
+          id: tokenHash, // PRIMARY KEY
+          email,
+          visited: false,
+          generatedBy: "email",
+          token: trackingToken, // for reference/debugging (not used in lookup)
+          url: `https://b2b.showmyflat.com?token=${trackingToken}`,
+          createdAt: new Date().toISOString(),
+        },
+        // ConditionExpression: "attribute_not_exists(id)", // safety
+      }),
+    );
 
     return response(200, {
       success: true,

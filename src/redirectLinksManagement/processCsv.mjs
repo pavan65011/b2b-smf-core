@@ -35,17 +35,25 @@ const isValidString = (val) => {
 };
 
 /* ---------- Encrypt ---------- */
+// function encrypt(payload) {
+//   const iv = crypto.randomBytes(12);
+//   const cipher = crypto.createCipheriv(ALGO, TRACKING_SECRET, iv);
+
+//   let encrypted = cipher.update(JSON.stringify(payload), "utf8", "hex");
+//   encrypted += cipher.final("hex");
+
+//   const tag = cipher.getAuthTag();
+//   return `${iv.toString("hex")}.${tag.toString("hex")}.${encrypted}`;
+// }
+
+
 function encrypt(payload) {
-  const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv(ALGO, TRACKING_SECRET, iv);
-
-  let encrypted = cipher.update(JSON.stringify(payload), "utf8", "hex");
-  encrypted += cipher.final("hex");
-
-  const tag = cipher.getAuthTag();
-  return `${iv.toString("hex")}.${tag.toString("hex")}.${encrypted}`;
+  return crypto
+    .createHmac("sha256", TRACKING_SECRET)
+    .update(payload)
+    .digest("base64url")
+    .slice(0, 22); // shorten
 }
-
 /* ---------- STREAM → JSON ---------- */
 async function parseCsv(stream) {
   return new Promise((resolve, reject) => {
@@ -182,7 +190,7 @@ export const handler = async (event) => {
         }
       } else {
         /* ---------- NEW ---------- */
-        const payload = email ? { email } : { phoneNumber };
+        const payload = email ?  email  : phoneNumber ;
 
         trackingToken = encrypt(payload);
         tokenHash = hashToken(trackingToken);
@@ -207,7 +215,7 @@ export const handler = async (event) => {
             new PutCommand({
               TableName: TABLE_NAMES.LEAD_LINK_VISITS_TABLE,
               Item: item,
-              ConditionExpression: "attribute_not_exists(id)",
+              // ConditionExpression: "attribute_not_exists(id)",
             }),
           ),
         );

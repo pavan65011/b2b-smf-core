@@ -113,12 +113,12 @@ async function findExistingRecord(email, phoneNumber) {
 export const handler = async (event) => {
   try {
     /* ---- Body ---- */
-    const { key } = JSON.parse(event.body || "{}");
+    const { key,baseUrl } = JSON.parse(event.body || "{}");
 
-    if (!key) {
+    if (!key || !baseUrl) {
       return response(400, {
         success: false,
-        message: "S3 key is required",
+        message: "S3 key and base URL are required",
       });
     }
 
@@ -195,7 +195,7 @@ export const handler = async (event) => {
         trackingToken = encrypt(payload);
         tokenHash = hashToken(trackingToken);
 
-        url = `https://b2b.showmyflat.com?token=${trackingToken}`;
+        url = `${baseUrl}?token=${trackingToken}`;
 
         const item = {
           id: tokenHash,

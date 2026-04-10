@@ -4,7 +4,11 @@ import {
   GetObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
-import { DB_DOC_CLIENT, hashToken, redirectLinksHeaders } from "../Utils/constants.mjs";
+import {
+  DB_DOC_CLIENT,
+  hashToken,
+  redirectLinksHeaders,
+} from "../Utils/constants.mjs";
 import { PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { TABLE_NAMES } from "../Utils/tableNames.mjs";
 import csv from "csv-parser";
@@ -113,7 +117,7 @@ async function findExistingRecord(email, phoneNumber) {
 export const handler = async (event) => {
   try {
     /* ---- Body ---- */
-    const { key,baseUrl } = JSON.parse(event.body || "{}");
+    const { key, baseUrl } = JSON.parse(event.body || "{}");
 
     if (!key || !baseUrl) {
       return response(400, {
@@ -153,8 +157,9 @@ export const handler = async (event) => {
 
       if (existing) {
         /* ---------- EXISTING ---------- */
-        url = existing.url;
+        // url = existing.url;
         trackingToken = existing.token;
+        url = `${baseUrl}?token=${trackingToken}`;
         tokenHash = existing.id;
 
         // Update missing phoneNumber
@@ -190,7 +195,7 @@ export const handler = async (event) => {
         }
       } else {
         /* ---------- NEW ---------- */
-        const payload = email ?  email  : phoneNumber ;
+        const payload = email ? email : phoneNumber;
 
         trackingToken = encrypt(payload);
         tokenHash = hashToken(trackingToken);

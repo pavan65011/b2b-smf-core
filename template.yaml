@@ -260,6 +260,21 @@ Resources:
             Method: post
             RestApiId: !Ref REDIRECTLINKAPI
 
+  GetFilesPresentInS3Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/redirectLinksManagement/getAllFilesPresentInS3.handler
+      Runtime: nodejs20.x
+      Timeout: 100
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
+      Events:
+        GetFilesPresentInS3Api:
+          Type: Api
+          Properties:
+            Path: /get-files
+            Method: get
+            RestApiId: !Ref REDIRECTLINKAPI
+
   B2BSMFAPI:
     Type: AWS::Serverless::Api
     Properties:

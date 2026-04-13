@@ -25,6 +25,13 @@ const TRACKING_SECRET = crypto
 const s3 = new S3Client({});
 const BUCKET = "b2b-smf-redirect-links-management";
 
+
+const normalizeBaseUrl = (url) => {
+  return url.trim().replace(/\/+$/, "").toLowerCase();; // remove trailing slash
+};
+
+
+
 const isValidString = (val) => {
   if (!val) return false;
 
@@ -125,6 +132,7 @@ export const handler = async (event) => {
         message: "S3 key and base URL are required",
       });
     }
+    const cleanBaseUrl = normalizeBaseUrl(baseUrl);
 
     /* ---- Get CSV ---- */
     const file = await s3.send(
@@ -159,8 +167,22 @@ export const handler = async (event) => {
         /* ---------- EXISTING ---------- */
         // url = existing.url;
         trackingToken = existing.token;
-        url = `${baseUrl}?token=${trackingToken}`;
+        url = `${cleanBaseUrl}?token=${trackingToken}`;
         tokenHash = existing.id;
+
+        /* ---------- ADD BASE URL TO SET ---------- */
+        dbPromises.push(
+          DB_DOC_CLIENT.send(
+            new UpdateCommand({
+              TableName: TABLE_NAMES.LEAD_LINK_VISITS_TABLE,
+              Key: { id: existing.id },
+              UpdateExpression: "ADD baseUrls :b",
+              ExpressionAttributeValues: {
+                ":b": new Set([cleanBaseUrl]),
+              },
+            }),
+          ),
+        );
 
         // Update missing phoneNumber
         if (!existing.phoneNumber && phoneNumber) {
@@ -200,15 +222,17 @@ export const handler = async (event) => {
         trackingToken = encrypt(payload);
         tokenHash = hashToken(trackingToken);
 
-        url = `${baseUrl}?token=${trackingToken}`;
+        url = `${cleanBaseUrl}?token=${trackingToken}`;
 
         const item = {
           id: tokenHash,
           visited: false,
           token: trackingToken,
-          url,
+          // url,
           generatedBy: email ? "email" : "phoneNumber",
           createdAt: new Date().toISOString(),
+          /* ---------- INITIAL SET ---------- */
+          baseUrls: new Set([cleanBaseUrl]),
         };
 
         // Only add if present

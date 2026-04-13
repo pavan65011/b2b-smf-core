@@ -275,6 +275,21 @@ Resources:
             Method: get
             RestApiId: !Ref REDIRECTLINKAPI
 
+  GetLeadsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/redirectLinksManagement/getAllLeads.handler
+      Runtime: nodejs20.x
+      Timeout: 100
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
+      Events:
+        GetLeadsApi:
+          Type: Api
+          Properties:
+            Path: /get-leads
+            Method: get
+            RestApiId: !Ref REDIRECTLINKAPI
+
   B2BSMFAPI:
     Type: AWS::Serverless::Api
     Properties:

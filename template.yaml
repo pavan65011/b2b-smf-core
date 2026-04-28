@@ -18,6 +18,9 @@ Globals:
         INTERNAL_JWT_SECRET: smf#650rspvk
         TRACKING_TOKEN_SECRET: n8n#650rspvksdrfa
         INTERNAL_API_SECRET: vkrshpnhna!2854#$
+        AWS_BUCKET_NAME_MEDIA: b2b-smf-media
+        AWS_CLOUDFRONT_URL: https://b2bmedia.showmyflat.com
+        AWS_REGION_SHOW_FLAT: ap-south-1
 
 Resources:
   B2BLeadsTable:
@@ -79,6 +82,18 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+
+  BlogsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: b2b-smf-core-blogs
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
 
   SendEmailFunction:
     Type: AWS::Serverless::Function
@@ -289,6 +304,51 @@ Resources:
             Path: /get-leads
             Method: get
             RestApiId: !Ref REDIRECTLINKAPI
+
+  GetAllBlogsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/blogs/getAllBlogs.handler
+      Runtime: nodejs20.x
+      Timeout: 30
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
+      Events:
+        GetAllBlogsApi:
+          Type: Api
+          Properties:
+            Path: /blogs
+            Method: get
+            RestApiId: !Ref B2BSMFAPI
+
+  GetABlogsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/blogs/getABlogs.handler
+      Runtime: nodejs20.x
+      Timeout: 30
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
+      Events:
+        GetABlogsApi:
+          Type: Api
+          Properties:
+            Path: /blogs/{blogUrl}
+            Method: get
+            RestApiId: !Ref B2BSMFAPI
+
+  LikeABlogsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/blogs/likeABlog.handler
+      Runtime: nodejs20.x
+      Timeout: 30
+      Role: arn:aws:iam::337909757009:role/b2b-smf-core-role
+      Events:
+        GetABlogsApi:
+          Type: Api
+          Properties:
+            Path: /blogs/{blogUrl}/like
+            Method: get
+            RestApiId: !Ref B2BSMFAPI
 
   B2BSMFAPI:
     Type: AWS::Serverless::Api

@@ -1,7 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
-import {  TABLE_NAMES } from "../Utils/tableNames.mjs";
+import { TABLE_NAMES } from "../Utils/tableNames.mjs";
 import { headers } from "../Utils/constants.mjs";
 
 const s3Client = new S3Client({
@@ -15,17 +15,31 @@ const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
 export const getAllMediaUrls = async (url) => {
-  const imagePrefix = `blogs/media/${url}`;
+  const imagePrefix = `blogs/media/${url}/`;
+
   const imageCommand = new ListObjectsV2Command({
     Bucket: bucket,
     Prefix: imagePrefix,
   });
-  const response = await s3Client.send(imageCommand);
-  const imageUrls = response.Contents.map((item) => {
-    return `${cloudfrontUrl}/${item.Key}`;
-  });
 
-  return imageUrls[0];
+  const response = await s3Client.send(imageCommand);
+
+  if (!response.Contents || response.Contents.length === 0) {
+    console.log(`No images found for prefix: ${imagePrefix}`);
+    return null;
+  }
+
+  // ✅ filter out folder objects
+  const imageObject = response.Contents.find(
+    (obj) => obj.Key !== imagePrefix && !obj.Key.endsWith("/"),
+  );
+
+  if (!imageObject) {
+    console.log(`No valid image found for prefix: ${imagePrefix}`);
+    return null;
+  }
+
+  return `${cloudfrontUrl}/${imageObject.Key}`;
 };
 export const handler = async (event, context) => {
   const params = {
@@ -40,6 +54,7 @@ export const handler = async (event, context) => {
     const dataIncludedWithMediaURLS = await Promise.all(
       data.Items.map(async (blog) => {
         const urls = await getAllMediaUrls(blog.blogUrl);
+        console.log(`Media URL for blog ${blog.blogUrl}:`, urls);
         return {
           // id: id,
           title: blog.title,

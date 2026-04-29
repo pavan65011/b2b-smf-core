@@ -347,7 +347,7 @@ Resources:
           Type: Api
           Properties:
             Path: /blogs/{blogUrl}/like
-            Method: get
+            Method: post
             RestApiId: !Ref B2BSMFAPI
 
   B2BSMFAPI:

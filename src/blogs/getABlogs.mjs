@@ -100,6 +100,7 @@ export const handler = async (event) => {
         "x-blog-title": blogMeta?.title || "",
         "x-blog-description": blogMeta?.brief || "",
         "Content-Type": "text/html", // Ensure the content type is set to HTML
+        "Access-Control-Expose-Headers": "x-blog-title,x-blog-description",
       },
       body: htmlContent,
     };

@@ -8,6 +8,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { generateHashId } from "../Utils/helper.mjs";
 import { headers } from "../Utils/constants.mjs";
+import { getAllMediaUrls } from "./getAllBlogs.mjs";
 const bucket = process.env.AWS_BUCKET_NAME_MEDIA;
 const s3Client = new S3Client({
   region: process.env.AWS_REGION_SHOW_FLAT,
@@ -93,14 +94,17 @@ export const handler = async (event) => {
     const htmlContent = await streamToString(s3Response.Body);
     await incrementNumberOfViews(blogUrl);
     const blogMeta = await getBlogMetaData(blogUrl);
+    const imageUrl= await getAllMediaUrls(blogUrl);
     return {
       statusCode: 200,
       headers: {
         ...headers,
         "x-blog-title": blogMeta?.title || "",
         "x-blog-description": blogMeta?.brief || "",
+        "x-cover-image": imageUrl || "",
         "Content-Type": "text/html", // Ensure the content type is set to HTML
-        "Access-Control-Expose-Headers": "x-blog-title,x-blog-description",
+        "Access-Control-Expose-Headers":
+          "x-blog-title,x-blog-description,x-cover-image",
       },
       body: htmlContent,
     };

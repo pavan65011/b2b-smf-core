@@ -1,7 +1,11 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import {  TABLE_NAMES } from "../Utils/tableNames.mjs";
+import { TABLE_NAMES } from "../Utils/tableNames.mjs";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { UpdateCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import {
+  UpdateCommand,
+  DynamoDBDocumentClient,
+  GetCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { generateHashId } from "../Utils/helper.mjs";
 import { headers } from "../Utils/constants.mjs";
 const bucket = process.env.AWS_BUCKET_NAME_MEDIA;
@@ -17,31 +21,52 @@ const streamToString = (stream) =>
     stream.on("data", (chunk) => chunks.push(chunk));
     stream.on("error", reject);
     stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-  }
-);
-const incrementNumberOfViews = async(blogUrl)=>{
+  });
+const incrementNumberOfViews = async (blogUrl) => {
   try {
     const blogId = generateHashId(blogUrl);
-    
+
     const updateParams = {
       TableName: TABLE_NAMES.BLOGS_TABLE,
-      Key: { id: blogId }, 
+      Key: { id: blogId },
       UpdateExpression: "ADD #viewsAttr :inc",
       ExpressionAttributeNames: {
-        "#viewsAttr": "views", 
+        "#viewsAttr": "views",
       },
       ExpressionAttributeValues: {
-        ":inc": 1, 
+        ":inc": 1,
       },
     };
     const command = new UpdateCommand(updateParams);
     const result = await docClient.send(command);
-    return 1 ;
+    return 1;
   } catch (error) {
     console.error(error);
-    return 0 ;
+    return 0;
   }
-}
+};
+
+const getBlogMetaData = async (blogUrl) => {
+  try {
+    const blogId = generateHashId(blogUrl);
+
+    const params = {
+      TableName: TABLE_NAMES.BLOGS_TABLE,
+      Key: {
+        id: blogId,
+      },
+    };
+
+    const command = new GetCommand(params);
+
+    const result = await docClient.send(command);
+
+    return result.Item || null;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 export const handler = async (event) => {
   try {
     const { blogUrl } = event.pathParameters;
@@ -67,10 +92,13 @@ export const handler = async (event) => {
     // Convert the file stream to string
     const htmlContent = await streamToString(s3Response.Body);
     await incrementNumberOfViews(blogUrl);
+    const blogMeta = await getBlogMetaData(blogUrl);
     return {
       statusCode: 200,
       headers: {
         ...headers,
+        "x-blog-title": blogMeta?.title || "",
+        "x-blog-description": blogMeta?.brief || "",
         "Content-Type": "text/html", // Ensure the content type is set to HTML
       },
       body: htmlContent,
@@ -84,4 +112,3 @@ export const handler = async (event) => {
     };
   }
 };
-    

@@ -101,10 +101,11 @@ export const handler = async (event) => {
         ...headers,
         "x-blog-title": blogMeta?.title || "",
         "x-blog-description": blogMeta?.metaDescription || "",
+        "x-blog-keywords": blogMeta?.metaKeywords,
         "x-cover-image": imageUrl || "",
         "Content-Type": "text/html", // Ensure the content type is set to HTML
         "Access-Control-Expose-Headers":
-          "x-blog-title,x-blog-description,x-cover-image",
+          "x-blog-title,x-blog-description,x-cover-image,x-blog-keywords",
       },
       body: htmlContent,
     };

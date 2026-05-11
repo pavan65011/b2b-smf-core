@@ -51,8 +51,12 @@ export const handler = async (event, context) => {
 
     const command = new ScanCommand(params);
     const data = await docClient.send(command);
+    const sortedBlogs = data.Items.sort(
+      (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp),
+    );
+
     const dataIncludedWithMediaURLS = await Promise.all(
-      data.Items.map(async (blog) => {
+      sortedBlogs.map(async (blog) => {
         const urls = await getAllMediaUrls(blog.blogUrl);
         console.log(`Media URL for blog ${blog.blogUrl}:`, urls);
         return {

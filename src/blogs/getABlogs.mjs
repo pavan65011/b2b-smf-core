@@ -100,7 +100,7 @@ export const handler = async (event) => {
       headers: {
         ...headers,
         "x-blog-title": blogMeta?.title || "",
-        "x-blog-description": blogMeta?.brief || "",
+        "x-blog-description": blogMeta?.metaDescription || "",
         "x-cover-image": imageUrl || "",
         "Content-Type": "text/html", // Ensure the content type is set to HTML
         "Access-Control-Expose-Headers":
